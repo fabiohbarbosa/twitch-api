@@ -84,7 +84,7 @@ class StreamAPI {
   }
 
   endpoints() {
-    this.router.get('/streams', async (req, res, next) => {
+    this.router.get('/streams', async(req, res, next) => {
       try {
         const game = this._gameFromCache(req.query.game);
         const { limit, offset } = this._getPaginationValues(req);
