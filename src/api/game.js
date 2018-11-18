@@ -58,6 +58,6 @@ const main = (router, eventEmitter) => {
   api.endpoints();
 
   return api.router;
-}
+};
 
 export default main;

@@ -18,8 +18,9 @@ export default router => {
     };
 
     axios.get(`${props.twitch.url}/streams`, options).then(response => {
-      console.log('a')
       const { preview, channel } = response.data.streams[0];
+
+      // get channel and fill in iframe
 
       const prePrevious = `${req.fullUrl}?limit=${limit}&offset=${offset}`;
       const previous = game ? `${prePrevious}&game=${game}` : prePrevious;
@@ -36,4 +37,4 @@ export default router => {
     }).catch(err => next(err));
   });
   return router;
-}
+};

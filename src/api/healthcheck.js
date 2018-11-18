@@ -1,10 +1,10 @@
 import props from '../../properties';
 
 export default (router) => {
-  router.get('/healthcheck', async (req, res, next) => {
+  router.get('/healthcheck', async(req, res, next) => {
     let healthy = true;
     const services = {
-        schedules: 'UP'
+      schedules: 'UP'
     };
 
     if (!props.schedule.enable) {
