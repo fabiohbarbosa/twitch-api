@@ -6,11 +6,10 @@ import props from '../properties';
 
 import gameEventProcess from './event/game-event';
 
-import healthcheck from './api/healthcheck';
-import game from './api/game';
-import stream from './api/stream';
+import healthcheck from './api/healthcheck-api';
+import game from './api/game-api';
+import stream from './api/stream-api';
 
-import urlParser from './middleware/url-parser';
 import errorHandler from './middleware/error-handler';
 
 // load event to fetch games
@@ -28,12 +27,9 @@ app.use(morgan('combined', {
 // disable express default headers
 app.disable('x-powered-by');
 
-// parse url middleware
-app.use(urlParser);
-
 app.use('/', healthcheck(router));
 app.use('/api', game(router, gameEvent));
-app.use('/api', stream(router));
+app.use('/api', stream(router, gameEvent));
 
 // wrong routes should be return 404 status code
 app.use('*', (req, res) => res.status(404).send());
