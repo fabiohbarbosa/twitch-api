@@ -34,7 +34,7 @@ class StreamAPI {
     const previous = `${protocol}://${host}&limit=${limit}&offset=${prevLimit > 0 ? prevLimit : 0}`;
     const next = `${protocol}://${host}&limit=${limit}&offset=${offset + limit}`;
 
-    return { next, previous };
+    return { next, previous: offset > 0 ? previous : undefined };
   }
 
   _gameFromCache(game) {
@@ -101,7 +101,7 @@ class StreamAPI {
         res.send({
           _links: {
             next,
-            previous: offset > 0 ? previous : undefined
+            previous
           },
           ...streamData
         });
