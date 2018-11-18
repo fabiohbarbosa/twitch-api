@@ -68,7 +68,7 @@ class GameEvent {
    * @returns {arrays} URLs to fetch games.
    */
   _getNextRequestsUrls(totalGames) {
-    Log.info(`There are ${totalGames} games`);
+    Log.info(`There are ${totalGames} games in Twitch`);
     const numRequests = Math.ceil(totalGames / this.limit);
     const nextRequestUrls = [];
 
@@ -120,7 +120,12 @@ class GameEvent {
       }
       if (finished) {
         Log.info(`Received ${this.gamesIndexToSwap.length} games from twitch`);
-        this.event.emit('update', Array.from(this.gamesIndexToSwap));
+        const comparable = (v1, v2) => {
+          if (v1.popularity > v2.popularity) return -1;
+          if (v1.popularity < v2.popularity) return 1;
+          return 0;
+        };
+        this.event.emit('update', Array.from(this.gamesIndexToSwap.sort(comparable)));
       }
     };
 
