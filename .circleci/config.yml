@@ -108,15 +108,11 @@ jobs:
       GROUP: service
       SERVICENAME: api
     steps:
-      - checkout
+      - <<: *attach_workspace
 
       # Enable DIND feature
       - setup_remote_docker:
          docker_layer_caching: true
-
-      - run:
-          name: Increase version file to next minor version
-          command: sh files/version.sh
 
       - run:
           name: Build docker image
