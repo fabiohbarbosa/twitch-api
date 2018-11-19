@@ -28,8 +28,8 @@ app.use(morgan('combined', {
 app.disable('x-powered-by');
 
 app.use('/', healthcheck(router));
-app.use('/api', game(router, gameEvent));
-app.use('/api', stream(router, gameEvent));
+app.use('/v1', game(router, gameEvent));
+app.use('/v1', stream(router, gameEvent));
 
 // wrong routes should be return 404 status code
 app.use('*', (req, res) => res.status(404).send());
