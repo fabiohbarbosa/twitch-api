@@ -88,6 +88,11 @@ jobs:
             git remote add circleci https://fabiohbarbosa:${GITHUB_TOKEN}@github.com/fabiohbarbosa/twitch-api.git
 
       - run:
+          name: Make a checkout in possible changes did in install job
+          command: |
+            git checkout package.json package-lock.json
+
+      - run:
           name: Patch version
           command: |
             npm version patch -m "Release patch from SHA1:${CIRCLE_SHA1} [ci skip]"
