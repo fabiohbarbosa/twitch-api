@@ -96,8 +96,9 @@ jobs:
           name: Patch version
           command: |
             npm version patch -m "Release patch from SHA1:${CIRCLE_SHA1} [ci skip]"
-            ls -la
             git push circleci master
+            node -p -e 'require(`./package.json`).version' > VERSION
+            ls -la
       - <<: *persist_to_workspace
 
   build:

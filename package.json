@@ -9,7 +9,7 @@
     "eslint": "eslint --ignore-path .gitignore .",
     "eslint:fix": "eslint --ignore-path .gitignore . --fix",
     "test": "exit 0",
-    "version": "VERSION=$(node -p -e 'require(`./package.json`).version') && printf $VERSION > VERSION && git tag $VERSION && git push --tags"
+    "version": "VERSION=$(node -p -e 'require(`./package.json`).version') && git tag $VERSION && git push --tags"
   },
   "repository": {
     "type": "git",
