@@ -28,18 +28,9 @@ class GameEvent {
     this.gamesIndexToSwap = [];
   }
 
-  /**
-   * Callback for fetch games queue execution.
-   *
-   * @callback queueCallback
-   * @param {string} err - Error message.
-   * @param {object} games - Games fetch from twitch.
-   * @param {boolean} finished - It was the last task execution.
-   * @param {string} url - URL used to make an API request.
-   */
   _queue() {
     /**
-     * Queue executor.
+     * Queue executor
      *
      * @param {string} url - URL used to make an API request.
      * @param {queueCallback} callback - A callback to run.
@@ -54,11 +45,43 @@ class GameEvent {
           callback(null, res.data.top, queue.workersList().length === 1, url);
         })
         .catch(err => {
-          callback(JSON.parse(err.response.data.message), null, queue.workersList().length === 1, url);
+          const errObj = JSON.parse(err.response.data.message);
+          callback(errObj, null, queue.workersList().length === 1, url);
         });
     }, 10);
 
     return queue;
+  }
+
+  /**
+   * Callback for fetch games queue execution.
+   *
+   * @callback queueCallback
+   * @param {string} err - Error message.
+   * @param {object} games - Games fetch from twitch.
+   * @param {boolean} finished - It was the last task execution.
+   * @param {string} url - URL used to make an API request.
+   */
+  _queueCallback(err, games, finished, url) {
+    if (err && err.status === 400) {
+      Log.warn(`Cannot process request: ${url}, total games should have changed`);
+    } else if (err) {
+      Log.error(`Error to process request: ${url} - message: ${JSON.stringify(err)}`);
+    } else {
+      this._indexData(games);
+      this.event.emit('change');
+      Log.info(`Success to process request: ${url}`);
+    }
+
+    if (finished) {
+      Log.info(`Received ${this.gamesIndexToSwap.length} games from twitch`);
+      const comparable = (v1, v2) => {
+        if (v1.popularity > v2.popularity) return -1;
+        if (v1.popularity < v2.popularity) return 1;
+        return 0;
+      };
+      this.event.emit('update', Array.from(this.gamesIndexToSwap.sort(comparable)));
+    }
   }
 
   /**
@@ -77,8 +100,6 @@ class GameEvent {
       nextRequestUrls.push(`${this.url}?limit=${this.limit}&offset=${offset}`);
       offset += this.limit;
     }
-    nextRequestUrls.push(`${this.url}?limit=${this.limit}&offset=${totalGames}`);
-
     return nextRequestUrls;
   };
 
@@ -97,53 +118,31 @@ class GameEvent {
   }
 
   /**
-   * Process all games' requests.
+   * Process all games' requests
    */
   async _process() {
-    // clean games to swap
-    this.gamesIndexToSwap = [];
-    this.event.emit('start');
-
-    const url = `${this.url}?limit=${this.limit}`;
-
-    Log.info(`Fetching games from ${url}`);
-
-    const callback = (err, games, finished, url) => {
-      if (err && err.status === 400) {
-        Log.warn(`Cannot process request: ${url}, total games should have changed`);
-      } else if (err) {
-        Log.error(`Error to process request: ${url} - message: ${JSON.stringify(err)}`);
-      } else {
-        this._indexData(games);
-        this.event.emit('change');
-        Log.info(`Success to process request: ${url}`);
-      }
-      if (finished) {
-        Log.info(`Received ${this.gamesIndexToSwap.length} games from twitch`);
-        const comparable = (v1, v2) => {
-          if (v1.popularity > v2.popularity) return -1;
-          if (v1.popularity < v2.popularity) return 1;
-          return 0;
-        };
-        this.event.emit('update', Array.from(this.gamesIndexToSwap.sort(comparable)));
-      }
-    };
-
     try {
+      // clean games to swap
+      this.gamesIndexToSwap = [];
+      this.event.emit('start');
+
+      const url = `${this.url}?limit=${this.limit}`;
+
       // the first request to get the total
+      Log.info(`Fetching games from ${url}`);
       const res = await axios.get(url, this.options);
 
       const totalGames = res.data._total;
       const games = res.data.top;
 
-      callback(null, games, false, url);
+      this._queueCallback(null, games, false, url);
       const nextRequestsUrls = this._getNextRequestsUrls(totalGames);
 
       // add last request to front of queue, because the games size changes all the time
-      this.queue.unshift(nextRequestsUrls.pop(), callback);
+      this.queue.unshift(nextRequestsUrls.pop(), this._queueCallback);
 
       // add the others request's url
-      this.queue.push(nextRequestsUrls, callback);
+      this.queue.push(nextRequestsUrls, this._queueCallback);
     } catch (err) {
       throw err.stack;
     }
@@ -175,3 +174,4 @@ const main = () => {
 };
 
 export default main;
+export { GameEvent };

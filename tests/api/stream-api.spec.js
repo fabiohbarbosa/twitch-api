@@ -203,7 +203,7 @@ describe('StreamAPI specs', () => {
       api = new StreamAPI(undefined, undefined);
     });
 
-    it('should reduce data coming from twitch API', () => {
+    it('should reduce real data from twitch API', () => {
       const data = require('./streams.json');
 
       const streamData = api._buildStreamResp(data);
