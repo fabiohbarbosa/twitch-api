@@ -19,8 +19,6 @@ WORKDIR ${WORKDIR}
 
 COPY --from=builder ${WORKDIR}/node_modules/ ./node_modules
 
-RUN npm rebuild
-
 COPY config config
 COPY properties properties
 COPY src src
