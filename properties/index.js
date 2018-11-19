@@ -19,7 +19,7 @@ const envVars = {
   port: process.env.PORT,
   logLevel: process.env.LOG_LEVEL,
   schedule: {
-    enable: process.env.SCHEDULE_ENABLE,
+    enable: process.env.SCHEDULE_ENABLE === 'true' ? true : false,
     gameCron: process.env.SCHEDULE_GAMES_CRON
   },
   ...defaultVars

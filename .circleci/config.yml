@@ -9,7 +9,7 @@ default_image: &default_image
 working_directory: &working_directory
   working_directory: ~/repo
 
-# get files from cache
+# get archive files
 attach_workspace: &attach_workspace
   attach_workspace:
     at: ~/repo
@@ -19,6 +19,21 @@ persist_to_workspace: &persist_to_workspace
   persist_to_workspace:
     root: ~/repo
     paths: ./**
+
+# configure gcloud authetication
+set_gcp_auth: &set_gcp_auth
+  run:
+    name: Set GCP auth
+    command: |
+      echo ${GOOGLE_AUTH} > ${HOME}/gcp-key.json
+      gcloud auth activate-service-account --key-file ${HOME}/gcp-key.json
+      gcloud auth configure-docker --quiet
+
+# configure job to run only on master branch
+only_master: &only_master
+  branches:
+    only:
+      - master
 
 jobs:
   install:
@@ -57,6 +72,95 @@ jobs:
           name: Run eslint
           command: npm run eslint
 
+  patch_version:
+    <<: *working_directory
+    <<: *default_image
+    steps:
+      - <<: *attach_workspace
+
+      - run:
+          name: Configure git to push
+          command: |
+            rm -rf ${HOME}/.gitconfig
+            git config --global push.default simple
+            git config --global user.name "CircleCI"
+            git config --global user.email fabiohbarbosa@gmail.com
+            git remote add circleci https://fabiohbarbosa:${GITHUB_TOKEN}@github.com/fabiohbarbosa/twitch-api.git
+
+      - run:
+          name: Patch version
+          command: |
+            npm version patch -m "Release patch from SHA1:${CIRCLE_SHA1} [ci skip]"
+            git push
+      - <<: *persist_to_workspace
+
+  build:
+    <<: *working_directory
+    docker:
+      - image: google/cloud-sdk
+    environment:
+      GCP_PROJECT: twitch-223000
+      GROUP: service
+      SERVICENAME: api
+    steps:
+      - checkout
+
+      # Enable DIND feature
+      - setup_remote_docker:
+         docker_layer_caching: true
+
+      - run:
+          name: Increase version file to next minor version
+          command: sh files/version.sh
+
+      - run:
+          name: Build docker image
+          command: |
+            VERSION=$(head -n 1 VERSION) # load $VERSION from file
+            echo "gcr.io/$GCP_PROJECT/$GROUP/$SERVICENAME:$VERSION"
+            docker build -t gcr.io/$GCP_PROJECT/$GROUP/$SERVICENAME:$VERSION .
+
+      - <<: *set_gcp_auth
+
+      - run:
+          name: Push docker image to GCP dev registry
+          command: |
+            VERSION=$(head -n 1 VERSION) # load $VERSION from file
+            echo "gcr.io/$GCP_PROJECT/$GROUP/$SERVICENAME:$VERSION"
+            docker push gcr.io/$GCP_PROJECT/$GROUP/$SERVICENAME:$VERSION
+
+      - <<: *persist_to_workspace
+
+  deploy:
+    <<: *working_directory
+    docker:
+      - image: google/cloud-sdk
+    environment:
+      GCP_PROJECT: twitch-223000
+      CLUSTER: twitch
+      CLUSTER_ZONE: europe-west1-c
+      ENVIRONMENT: prod
+      REPLICAS: 3
+
+    steps:
+      - <<: *attach_workspace
+      - <<: *set_gcp_auth
+
+      - run:
+          name: Set kubernetes cluster
+          command: |
+            gcloud config set container/use_client_certificate True
+            gcloud container clusters get-credentials $CLUSTER --zone $CLUSTER_ZONE --project $GCP_PROJECT
+
+      - run:
+          name: Create service.yaml kubernetes deploy file
+          command: |
+            VERSION=$(head -n 1 VERSION) # load $VERSION from file
+            bash files/deploy_kubernetes.sh $VERSION
+
+      - run:
+          name: Kubernetes apply
+          command: kubectl apply -f service.yaml
 
 workflows:
   version: 2
@@ -64,6 +168,7 @@ workflows:
     jobs:
       - install:
           context: twitch-envs
+
       - test:
           context: twitch-envs
           requires:
@@ -72,3 +177,25 @@ workflows:
           context: twitch-envs
           requires:
             - install
+
+      - patch_version:
+          context: twitch-envs
+          requires:
+            - test
+            - eslint
+          filters:
+            <<: *only_master
+
+      - build:
+          context: twitch-envs
+          requires:
+            - patch_version
+          filters:
+            <<: *only_master
+
+      - deploy:
+          context: twitch-envs
+          requires:
+            - build
+          filters:
+            <<: *only_master
