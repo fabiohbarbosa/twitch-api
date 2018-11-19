@@ -1,5 +1,5 @@
 {
-  "name": "twitch-dev",
+  "name": "twitch-api",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -12,15 +12,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/fabiohbarbosa/twitch-dev.git"
+    "url": "git+https://github.com/fabiohbarbosa/twitch-api.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/fabiohbarbosa/twitch-dev/issues"
+    "url": "https://github.com/fabiohbarbosa/twitch-api/issues"
   },
-  "homepage": "https://github.com/fabiohbarbosa/twitch-dev#readme",
+  "homepage": "https://github.com/fabiohbarbosa/twitch-api#readme",
   "dependencies": {
     "axios": "^0.18.0",
     "esm": "^3.0.84",
