@@ -52,7 +52,11 @@ class StreamAPI {
     return gameResp[0].name;
   }
 
-  _getPaginationValues(req) {
+  _getPaginationReqValues(req) {
+    if (req.query.limit === 0 || req.query.limit === '0') {
+      throw new HttpError(400, 'Limit must be between 1 and 100');
+    }
+
     // get pagination parameters or set default values
     const limit = req.query.limit ? parseInt(req.query.limit, 10) : 5;
     const offset = req.query.offset ? parseInt(req.query.offset, 10) : 0;
@@ -60,6 +64,7 @@ class StreamAPI {
     if (!(limit > 0 && limit <= 100)) {
       throw new HttpError(400, 'Limit must be between 1 and 100');
     }
+
     return { limit, offset };
   }
 
@@ -87,7 +92,7 @@ class StreamAPI {
     this.router.get('/streams', async(req, res, next) => {
       try {
         const game = this._gameFromCache(req.query.game);
-        const { limit, offset } = this._getPaginationValues(req);
+        const { limit, offset } = this._getPaginationReqValues(req);
 
         const httpOpts = {
           headers: { 'Client-ID': props.twitch.clientId },
@@ -140,3 +145,4 @@ const main = (router, eventEmitter) => {
 };
 
 export default main;
+export { StreamAPI };
