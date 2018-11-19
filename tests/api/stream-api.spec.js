@@ -139,8 +139,8 @@ describe('StreamAPI specs', () => {
       };
       const { limit, offset } = api._getPaginationReqValues(req);
 
-      assert.typeOf(limit, 'number')
-      assert.typeOf(offset, 'number')
+      assert.typeOf(limit, 'number');
+      assert.typeOf(offset, 'number');
     });
 
     it('should convert number args to number', () => {
@@ -152,8 +152,8 @@ describe('StreamAPI specs', () => {
       };
       const { limit, offset } = api._getPaginationReqValues(req);
 
-      assert.typeOf(limit, 'number')
-      assert.typeOf(offset, 'number')
+      assert.typeOf(limit, 'number');
+      assert.typeOf(offset, 'number');
     });
 
     it('should throw exception when limit is greater than 100', () => {
