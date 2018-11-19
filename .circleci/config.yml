@@ -61,7 +61,7 @@ jobs:
       - <<: *attach_workspace
       - run:
           name: Run tests
-          command: npm test
+          command: npm run coverage
 
   eslint:
     <<: *working_directory

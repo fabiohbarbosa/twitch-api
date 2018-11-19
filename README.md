@@ -2,6 +2,7 @@ Twitch API
 =====================
 
 [![CircleCI](https://circleci.com/gh/fabiohbarbosa/twitch-api.svg?style=svg)](https://circleci.com/gh/fabiohbarbosa/twitch-api)
+[![Coverage Status](https://coveralls.io/repos/github/fabiohbarbosa/twitch-api/badge.svg?branch=master)](https://coveralls.io/github/fabiohbarbosa/twitch-api?branch=master)
 
 ## NVM
 
