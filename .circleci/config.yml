@@ -88,7 +88,7 @@ jobs:
             git remote add circleci https://fabiohbarbosa:${GITHUB_TOKEN}@github.com/fabiohbarbosa/twitch-api.git
 
       - run:
-          name: Make a checkout in possible changes did in install job
+          name: Make a checkout to prevent possible changes did in install job
           command: |
             git checkout package.json package-lock.json
 
@@ -96,6 +96,7 @@ jobs:
           name: Patch version
           command: |
             npm version patch -m "Release patch from SHA1:${CIRCLE_SHA1} [ci skip]"
+            ls -la
             git push circleci master
       - <<: *persist_to_workspace
 
@@ -117,6 +118,7 @@ jobs:
       - run:
           name: Build docker image
           command: |
+            ls -la
             VERSION=$(head -n 1 VERSION) # load $VERSION from file
             echo "gcr.io/$GCP_PROJECT/$GROUP/$SERVICENAME:$VERSION"
             docker build -t gcr.io/$GCP_PROJECT/$GROUP/$SERVICENAME:$VERSION .
