@@ -164,6 +164,20 @@ jobs:
           name: Kubernetes apply
           command: kubectl apply -f service.yaml
 
+  healthcheck:
+    docker:
+      - image: alpine
+    environment:
+      HEALTHCHECK: /api/healthcheck
+    steps:
+      - run:
+        name: Install curl
+        command: apk add curl --update
+
+      - run:
+        name: Healthcheck
+        command: curl -I ${ENV_URL}${HEALTHCHECK} --fail
+
 workflows:
   version: 2
   build_and_deploy:
@@ -199,5 +213,12 @@ workflows:
           context: twitch-envs
           requires:
             - build
+          filters:
+            <<: *only_master
+
+      - healthcheck:
+          context: twitch-envs
+          requires:
+            - deploy
           filters:
             <<: *only_master
