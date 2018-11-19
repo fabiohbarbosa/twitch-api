@@ -98,7 +98,6 @@ jobs:
             npm version patch -m "Release patch from SHA1:${CIRCLE_SHA1} [ci skip]"
             git push circleci master
             node -p -e 'require(`./package.json`).version' > VERSION
-            ls -la
       - <<: *persist_to_workspace
 
   build:
@@ -119,7 +118,6 @@ jobs:
       - run:
           name: Build docker image
           command: |
-            ls -la
             VERSION=$(head -n 1 VERSION) # load $VERSION from file
             echo "gcr.io/$GCP_PROJECT/$GROUP/$SERVICENAME:$VERSION"
             docker build -t gcr.io/$GCP_PROJECT/$GROUP/$SERVICENAME:$VERSION .

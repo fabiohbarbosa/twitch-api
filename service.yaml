@@ -1,11 +1,3 @@
-#!/bin/bash
-set -e # ensure that this script will return a non-0 status code if any of rhe commands fail
-set -o pipefail # ensure that this script will return a non-0 status code if any of rhe commands fail
-
-VERSION=$1
-
-cat << EOF > service.yaml
-
 ---
 apiVersion: v1
 kind: Service
@@ -25,10 +17,10 @@ kind: Deployment
 metadata:
   name: service-api
   labels:
-    imageTag: '$VERSION'
+    imageTag: '1.0.5'
 spec:
   revisionHistoryLimit: 15
-  replicas: $REPLICAS
+  replicas: 3
   strategy:
     rollingUpdate:
       maxUnavailable: 1
@@ -40,18 +32,18 @@ spec:
     spec:
       containers:
       - name: service-api
-        image: gcr.io/$GCP_PROJECT/service/api:$VERSION
+        image: gcr.io/twitch-223000/service/api:1.0.5
         env:
           - name: PORT
             value: '8080'
           - name: ENVIRONMENT
-            value: $ENVIRONMENT
+            value: 'prod'
           - name: LOG_LEVEL
-            value: $LOG_LEVEL
+            value: 'info'
           - name: SCHEDULE_ENABLE
-            value: '$SCHEDULE_ENABLE'
+            value: 'true'
           - name: SCHEDULE_GAMES_CRON
-            value: '$SCHEDULE_GAMES_CRON'
+            value: '*/15 * * * *'
         ports:
           - containerPort: 8080
         readinessProbe:
@@ -75,7 +67,3 @@ spec:
             memory: 1500Mi
           requests:
             memory: 1500Mi
-
-EOF
-cat service.yaml
-kubectl apply -f service.yaml
