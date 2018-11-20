@@ -10,7 +10,7 @@ const localVars = {
   logLevel: 'info',
   schedule: {
     enable: true,
-    gameCron: '*/15 * * * *'
+    gameCron: '*/5 * * * *'
   },
   ...defaultVars
 };

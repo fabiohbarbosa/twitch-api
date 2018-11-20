@@ -5,6 +5,7 @@
 import { scheduleJob } from 'node-schedule';
 import { EventEmitter } from 'events';
 
+import * as _ from 'lodash';
 import * as axios from 'axios';
 import async from 'async';
 
@@ -18,6 +19,7 @@ class GameEvent {
    * @param {EventEmitter} event
    */
   constructor(event) {
+    this.semaphore = false;
     this.event = event;
     this.url = `${props.twitch.url}/games/top`;
     this.limit = 100;
@@ -85,7 +87,12 @@ class GameEvent {
         if (v1.popularity < v2.popularity) return 1;
         return 0;
       };
-      this.event.emit('update', Array.from(this.gamesIndexToSwap.sort(comparable)));
+
+      // clone array and remove duplicated
+      const newGames = Array.from(this.gamesIndexToSwap.sort(comparable));
+      this.event.emit('update', _.uniqBy(newGames, g => g.id));
+
+      this.semaphore = false;
     }
   }
 
@@ -127,8 +134,15 @@ class GameEvent {
    */
   async _process() {
     try {
+      // skip execution if scheduler has been running
+      if (this.semaphore === true) {
+        Log.warn('There is another schedule cycle fetching games. Skipping...');
+        return;
+      }
+
       // clean games to swap
       this.gamesIndexToSwap = [];
+      this.semaphore = true;
       this.event.emit('start');
 
       const url = `${this.url}?limit=${this.limit}`;

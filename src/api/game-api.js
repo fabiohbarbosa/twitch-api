@@ -23,10 +23,14 @@ class GameAPI {
 
   endpoints() {
     this.router.get('/game', (req, res, next) => {
-      if (!req.query.name || req.query.name.length < 3) {
+      res.send(this.games);
+    });
+
+    this.router.get('/game/searchBy', (req, res, next) => {
+      if (!req.query.name) {
         next({
           code: 400,
-          message: 'Name must be equals or greater than 2 chars',
+          message: 'Name cannot be empty',
           stack: new Error().stack
         });
         return;
