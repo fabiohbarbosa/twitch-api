@@ -12,7 +12,7 @@ Change your node version to a project current node version.
 `nvm use`
 
 ## ESLint
-`npm run eslint`
+`npm run lint`
 
 ## Test
 `npm test`
