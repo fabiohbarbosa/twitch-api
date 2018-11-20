@@ -60,7 +60,7 @@ jobs:
     steps:
       - <<: *attach_workspace
       - run:
-          name: Run tests
+          name: Run tests and send coverage report to coveralls
           command: npm run coverage
 
   lint:
