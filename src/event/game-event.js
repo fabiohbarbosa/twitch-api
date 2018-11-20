@@ -36,6 +36,7 @@ class GameEvent {
      * @param {queueCallback} callback - A callback to run.
      */
     const queue = async.queue((url, callback) => {
+      callback.bind(this);
       Log.debug(`Fetching games from ${url}`);
       Log.debug(`Waiting to be processed ${queue.length()}`);
       Log.debug('-------------------------------');
@@ -45,8 +46,12 @@ class GameEvent {
           callback(null, res.data.top, queue.workersList().length === 1, url);
         })
         .catch(err => {
-          const errObj = JSON.parse(err.response.data.message);
-          callback(errObj, null, queue.workersList().length === 1, url);
+          try {
+            const errObj = JSON.parse(err.response.data.message);
+            callback(errObj, null, queue.workersList().length === 1, url);
+          } catch(err) {
+              throw err;
+          }
         });
     }, 10);
 
@@ -135,14 +140,16 @@ class GameEvent {
       const totalGames = res.data._total;
       const games = res.data.top;
 
-      this._queueCallback(null, games, false, url);
+      const callback = this._queueCallback.bind(this);
+
+      callback(null, games, false, url);
       const nextRequestsUrls = this._getNextRequestsUrls(totalGames);
 
       // add last request to front of queue, because the games size changes all the time
-      this.queue.unshift(nextRequestsUrls.pop(), this._queueCallback);
+      this.queue.unshift(nextRequestsUrls.pop(), callback);
 
       // add the others request's url
-      this.queue.push(nextRequestsUrls, this._queueCallback);
+      this.queue.push(nextRequestsUrls, callback);
     } catch (err) {
       throw err.stack;
     }
