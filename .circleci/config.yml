@@ -63,14 +63,14 @@ jobs:
           name: Run tests
           command: npm run coverage
 
-  eslint:
+  lint:
     <<: *working_directory
     <<: *default_image
     steps:
       - <<: *attach_workspace
       - run:
-          name: Run eslint
-          command: npm run eslint
+          name: Run lint
+          command: npm run lint
 
   patch_version:
     <<: *working_directory
@@ -189,7 +189,7 @@ workflows:
           context: twitch-envs
           requires:
             - install
-      - eslint:
+      - lint:
           context: twitch-envs
           requires:
             - install
@@ -198,7 +198,7 @@ workflows:
           context: twitch-envs
           requires:
             - test
-            - eslint
+            - lint
           filters:
             <<: *only_master
 

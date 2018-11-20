@@ -6,8 +6,8 @@
   "scripts": {
     "start": "node index.js",
     "start:dev": "nodemon --inspect index.js",
-    "eslint": "eslint --ignore-path .gitignore .",
-    "eslint:fix": "eslint --ignore-path .gitignore . --fix",
+    "lint": "eslint --ignore-path .gitignore .",
+    "lint:fix": "eslint --ignore-path .gitignore . --fix",
     "test": "mocha tests/index.spec.js",
     "coverage": "nyc npm test && nyc report --reporter=text-lcov | coveralls",
     "coverage:html": "nyc npm test && nyc report --reporter=html",
