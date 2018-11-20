@@ -14,9 +14,11 @@ Change your node version to a project current node version.
 ## ESLint
 `npm run lint`
 
+## ESLint Fix
+`npm run lint:fix`
+
 ## Test
 `npm test`
-
 
 ## Run
 `npm start`
