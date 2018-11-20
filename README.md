@@ -10,6 +10,8 @@ Twitch API
 
 - Coveralls: https://coveralls.io/github/fabiohbarbosa/twitch-api?branch=master
 
+- Kubernetes Healthcheck: http://35.244.227.171/api/healthcheck
+
 ## NVM
 
 Change your node version to a project current node version.
