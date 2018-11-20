@@ -23,8 +23,7 @@ class GameAPI {
 
   endpoints() {
     this.router.get('/game', (req, res, next) => {
-      const name = req.query.name.trim().toLowerCase();
-      if (!name || name.length < 3) {
+      if (!req.query.name || req.query.name.length < 3) {
         next({
           code: 400,
           message: 'Name must be equals or greater than 2 chars',
@@ -32,6 +31,8 @@ class GameAPI {
         });
         return;
       }
+
+      const name = req.query.name.trim().toLowerCase();
       const resData = this.games.filter(g => g.name.trim().toLowerCase().includes(name));
       if (resData.length === 0) {
         res.status(204).send();
