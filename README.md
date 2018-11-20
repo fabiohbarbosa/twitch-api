@@ -33,7 +33,7 @@ Change your node version to a project current node version.
 - GITHUB_TOKEN: Github user token to push tags and relese files.
 - GOOGLE_AUTH: Google Cloud service account to deploy service in the Kubernetes.
 
-*The last 3 ones are configured in CircleCi `twitch-envs` to shared accross all projects.*
+*The last 3 ones are configured in CircleCi `twitch-envs` context to shared accross all projects.*
 
 **Application Variables**
 
