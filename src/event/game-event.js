@@ -49,8 +49,8 @@ class GameEvent {
           try {
             const errObj = JSON.parse(err.response.data.message);
             callback(errObj, null, queue.workersList().length === 1, url);
-          } catch(err) {
-              throw err;
+          } catch (err) {
+            throw err;
           }
         });
     }, 10);
