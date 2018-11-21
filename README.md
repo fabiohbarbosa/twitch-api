@@ -30,12 +30,14 @@ Change your node version to a project current node version.
 
 **CI/CD Variables**
 
-- COVERALLS_REPO_TOKEN: Coveralls token to send coverage reports to [Coveralls](https://coveralls.io).
 - ENV_URL: Kubernetes URL to be used in *healthcheck job*.
+- CYPRESS_BASE_URL: Cypress base URL that has the production host address
+- CYPRESS_RECORD_KEY: Cypress record key to store test reports into the [dashboard](https://dashboard.cypress.io/#/projects/3zzwmr/)
+- COVERALLS_REPO_TOKEN: Coveralls token to send coverage reports to [Coveralls](https://coveralls.io).
 - GITHUB_TOKEN: Github user token to push tags and relese files.
 - GOOGLE_AUTH: Google Cloud service account to deploy service in the Kubernetes.
 
-*The last 3 ones are configured in CircleCi `twitch-envs` context to shared accross all projects.*
+*All variables, except **COVERALLS_REPO_TOKEN**, are configured in CircleCi `twitch-envs` context to shared accross all projects.*
 
 **Application Variables**
 
