@@ -77,6 +77,8 @@ class StreamAPI {
     data.streams.reduce((data, s) => {
       data.push({
         channel: s.channel.name,
+        logo: s.channel.logo,
+        status: s.channel.status,
         url: s.channel.url,
         game: s.game,
         preview: s.preview.medium,
