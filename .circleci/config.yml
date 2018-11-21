@@ -179,6 +179,30 @@ jobs:
           name: Healthcheck
           command: curl -I ${ENV_URL}${HEALTHCHECK} --fail
 
+  test_e2e:
+    docker:
+      - image: cypress/browsers:chrome69
+    environment:
+      PROJECT_DIR: twitch-e2e-test
+    steps:
+      - run:
+          name: Clone twitch-e2e-test
+          command: |
+            git clone https://fabiohbarbosa:${GITHUB_TOKEN}@github.com/fabiohbarbosa/twitch-e2e-test.git
+            cd ${PROJECT_DIR}
+
+      - run:
+          name: Install project dependencies
+          command: |
+            cd ${PROJECT_DIR}
+            npm i
+
+      - run:
+          name: Run e2e test
+          command: |
+            cd ${PROJECT_DIR}
+            npm run cy:run:record
+
 workflows:
   version: 2
   build_and_deploy:
@@ -221,5 +245,12 @@ workflows:
           context: twitch-envs
           requires:
             - deploy
+          filters:
+            <<: *only_master
+
+      - test_e2e:
+          context: twitch-envs
+          requires:
+            - healthcheck
           filters:
             <<: *only_master
