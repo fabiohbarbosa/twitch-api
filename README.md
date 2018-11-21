@@ -44,3 +44,6 @@ Change your node version to a project current node version.
 - LOG_LEVEL: Application log stdout level.
 - SCHEDULE_ENABLE: Enable/disable application scheduler.
 - SCHEDULE_GAMES_CRON: Crontab expression to configure scheduler.
+
+## CI latest report
+![Latest Report](https://lh6.googleusercontent.com/VS0rF51dgnccp5J29-uyIFuDe1ZdpK44HPX5Ykf9C0f-dn4WGxpGuMBbBEjAR1om0XpOZgBNEDUgHQ=w2880-h1462-rw)
