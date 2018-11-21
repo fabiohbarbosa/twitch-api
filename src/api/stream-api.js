@@ -69,21 +69,28 @@ class StreamAPI {
   }
 
   _buildStreamResp(data) {
+    return {
+      channel: {
+        id: data.channel._id,
+        name: data.channel.name,
+        logo: data.channel.logo,
+        status: data.channel.status,
+        url: data.channel.url,
+      },
+      game: data.game,
+      preview: data.preview.medium,
+      viewers: data.viewers
+    };
+  }
+
+  _buildStreamsResp(data) {
     const streamData = [];
     if (data.streams.length === 0) {
       return streamData;
     }
 
     data.streams.reduce((data, s) => {
-      data.push({
-        channel: s.channel.name,
-        logo: s.channel.logo,
-        status: s.channel.status,
-        url: s.channel.url,
-        game: s.game,
-        preview: s.preview.medium,
-        viewers: s.viewers
-      });
+      data.push(this._buildStreamResp(s));
       return data;
     }, streamData);
 
@@ -91,6 +98,36 @@ class StreamAPI {
   }
 
   endpoints() {
+    this.router.get('/streams/:channelName', async(req, res, next) => {
+      const channel = req.params.channelName;
+      if (!channel) {
+        next({
+          code: 400,
+          message: 'Channel name cannot be empty',
+          stack: new Error().stack
+        });
+        return;
+      }
+
+      const httpOpts = {
+        headers: { 'Client-ID': props.twitch.clientId }
+      };
+
+      const streamData = await axios.get(`${props.twitch.url}/streams/${channel}`, httpOpts);
+      if (!streamData.data) {
+        next({
+          code: 400,
+          message: 'Invalid channel',
+          stack: new Error().stack
+        });
+        return;
+      }
+
+      const resData = this._buildStreamResp(streamData.data.stream);
+      res.send(resData);
+    });
+
+
     this.router.get('/streams', async(req, res, next) => {
       try {
         const game = this._gameFromCache(req.query.game);
@@ -102,7 +139,7 @@ class StreamAPI {
         };
 
         const streams = await axios.get(`${props.twitch.url}/streams`, httpOpts);
-        const streamData = this._buildStreamResp(streams.data);
+        const streamData = this._buildStreamsResp(streams.data);
         const { next, previous } = this._hateosUrl(req, game, limit, offset);
 
         res.send({

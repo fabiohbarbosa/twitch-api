@@ -206,7 +206,7 @@ describe('StreamAPI specs', () => {
     it('should reduce real data from twitch API', () => {
       const data = require('./streams.json');
 
-      const streamData = api._buildStreamResp(data);
+      const streamData = api._buildStreamsResp(data);
 
       assert.equal(data._total, streamData._total);
       assert.equal(streamData.lenght, data.lenght);
