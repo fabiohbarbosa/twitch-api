@@ -98,7 +98,7 @@ class StreamAPI {
   }
 
   endpoints() {
-    this.router.get('/streams/:channelName', async(req, res, next) => {
+    this.router.get('/stream/channel/:channelName', async(req, res, next) => {
       const channel = req.params.channelName;
       if (!channel) {
         next({
@@ -128,9 +128,9 @@ class StreamAPI {
     });
 
 
-    this.router.get('/streams', async(req, res, next) => {
+    this.router.get('/stream/game/:gameName', async(req, res, next) => {
       try {
-        const game = this._gameFromCache(req.query.game);
+        const game = this._gameFromCache(req.params.gameName);
         const { limit, offset } = this._getPaginationReqValues(req);
 
         const httpOpts = {
