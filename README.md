@@ -2,7 +2,7 @@ Twitch API
 =====================
 
 ## Links:
-- [CI/CD](https://circleci.com/gh/fabiohbarbosa/twitch-api)
+- [CI/CD](https://circleci.com/gh/fabiohbarbosa/workflows/twitch-api)
 - [Coveralls](https://coveralls.io/github/fabiohbarbosa/twitch-api?branch=master)
 - [Kubernetes Healthcheck](http://35.244.227.171/api/healthcheck)
 
@@ -46,4 +46,4 @@ Change your node version to a project current node version.
 - SCHEDULE_GAMES_CRON: Crontab expression to configure scheduler.
 
 ## CI latest report
-![Latest Report](https://lh6.googleusercontent.com/VS0rF51dgnccp5J29-uyIFuDe1ZdpK44HPX5Ykf9C0f-dn4WGxpGuMBbBEjAR1om0XpOZgBNEDUgHQ=w2880-h1462-rw)
+![Latest Report](https://drive.google.com/open?id=1fmvlgBbSWg2AggUjfG6rDFwh2PbrJouw)
